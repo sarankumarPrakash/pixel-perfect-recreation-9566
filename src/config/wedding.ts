@@ -34,7 +34,7 @@ export const wedding = {
     // 22 Nov 2026, 6:00 AM IST
     isoStart: "2026-11-22T06:00:00+05:30",
   },
-  audioSrc: "/audio/wedding-background.mp3",
+  audioSrc: "/__l5e/assets-v1/b252b0f1-1956-455e-a5f1-5ca1a3096b50/love-bgm.mp3",
   closing: {
     message: "Your Presence and Blessings Will Make Our Celebration Special",
     signoff: "With Love, Family & Friends",
