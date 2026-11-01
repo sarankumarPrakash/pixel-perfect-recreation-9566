@@ -5,6 +5,7 @@ import { wedding } from "@/config/wedding";
 
 type Ctx = { autoStart: () => () => void; start: () => void; toggle: () => void; playing: boolean; failed: boolean };
 const MusicCtx = createContext<Ctx | null>(null);
+const fallback: Ctx = { autoStart: () => () => {}, start: () => {}, toggle: () => {}, playing: false, failed: true };
 const KEY = "wedding-music-muted";
 
 export function playBell() {
@@ -93,8 +94,8 @@ export function MusicProvider({ children }: { children: ReactNode }) {
 
 export const useMusic = () => {
   const c = useContext(MusicCtx);
-  if (!c) throw new Error("useMusic outside provider");
-  return c;
+  // Fallback keeps the page rendering if the provider is momentarily missing (e.g. after a hot reload).
+  return c ?? fallback;
 };
 
 export function MusicPlayer() {
