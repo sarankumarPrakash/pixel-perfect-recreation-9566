@@ -6,7 +6,7 @@ function Door({ side }: { side: "left" | "right" }) {
     <motion.div
       initial={{ rotateY: 0 }}
       animate={{ rotateY: isLeft ? -105 : 105 }}
-      transition={{ delay: 1.6, duration: 2.6, ease: [0.6, 0, 0.3, 1] }}
+      transition={{ delay: 1, duration: 2.4, ease: [0.6, 0, 0.3, 1] }}
       style={{ transformOrigin: isLeft ? "left center" : "right center" }}
       className={`absolute top-0 h-full w-1/2 bg-maroon-radial ${isLeft ? "left-0 border-r" : "right-0 border-l"} border-gold`}
     >
@@ -30,7 +30,7 @@ export function TempleAnimation() {
         className="absolute left-1/2 top-0 z-10 -translate-x-1/2"
         initial={{ opacity: 1 }}
         animate={{ opacity: 0 }}
-        transition={{ delay: 2.4, duration: 0.8 }}
+        transition={{ delay: 1.8, duration: 0.8 }}
       >
         <motion.svg
           width="70"
