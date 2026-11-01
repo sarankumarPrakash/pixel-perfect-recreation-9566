@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useAutoScroll } from "@/hooks/use-auto-scroll";
 import { MusicPlayer, MusicProvider, useMusic } from "@/components/wedding/MusicPlayer";
 import { LoadingMonogram, OpeningScreen } from "@/components/wedding/OpeningScreen";
 import {
@@ -33,6 +34,7 @@ export const Route = createFileRoute("/")({
 function Invitation() {
   const [loading, setLoading] = useState(true);
   const { autoStart } = useMusic();
+  useAutoScroll(!loading);
 
   useEffect(() => {
     const id = setTimeout(() => setLoading(false), 1200);
