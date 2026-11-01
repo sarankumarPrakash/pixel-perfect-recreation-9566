@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
-import { MusicPlayer, MusicProvider, playBell, useMusic } from "@/components/wedding/MusicPlayer";
+import { MusicPlayer, MusicProvider, useMusic } from "@/components/wedding/MusicPlayer";
 import { LoadingMonogram, OpeningScreen } from "@/components/wedding/OpeningScreen";
 import {
   ClosingSection,
@@ -32,27 +32,19 @@ export const Route = createFileRoute("/")({
 
 function Invitation() {
   const [loading, setLoading] = useState(true);
-  const [opened, setOpened] = useState(false);
-  const { start } = useMusic();
+  const { autoStart } = useMusic();
 
   useEffect(() => {
-    const id = setTimeout(() => setLoading(false), 1400);
-    return () => clearTimeout(id);
-  }, []);
-
-  const open = () => {
-    playBell();
-    start();
-    setOpened(true);
-    window.scrollTo(0, 0);
-  };
+    const id = setTimeout(() => setLoading(false), 1200);
+    return autoStart(id);
+  }, [autoStart]);
 
   return (
-    <main className={opened ? "" : "h-screen overflow-hidden"}>
+    <main>
       <AnimatePresence>{loading && <LoadingMonogram key="load" />}</AnimatePresence>
-      <AnimatePresence>{!loading && !opened && <OpeningScreen key="open" onOpen={open} />}</AnimatePresence>
-      {opened && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.2, delay: 0.4 }}>
+      {!loading && (
+        <>
+          <OpeningScreen />
           <CoupleIntroduction />
           <ReceptionDetails />
           <WeddingDetails />
@@ -60,7 +52,7 @@ function Invitation() {
           <VenueSection />
           <ClosingSection />
           <MusicPlayer />
-        </motion.div>
+        </>
       )}
     </main>
   );
