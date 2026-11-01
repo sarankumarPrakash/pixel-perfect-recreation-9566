@@ -66,7 +66,7 @@ export function GoldCard({ children, className = "" }: { children: ReactNode; cl
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.9, ease: "easeOut" }}
       whileHover={{ y: -4 }}
-      className={`relative mx-auto max-w-xl rounded-sm gold-frame bg-card/90 px-6 py-10 text-center shadow-gold backdrop-blur-sm sm:px-12 ${className}`}
+      className={`relative mx-auto w-full max-w-xl rounded-sm gold-frame bg-card/90 px-4 py-8 text-center shadow-gold backdrop-blur-sm sm:px-12 sm:py-10 ${className}`}
     >
       {["left-2 top-2", "right-2 top-2 rotate-90", "right-2 bottom-2 rotate-180", "left-2 bottom-2 -rotate-90"].map((p) => (
         <svg key={p} className={`absolute h-8 w-8 text-gold ${p}`} viewBox="0 0 32 32" fill="none" stroke="currentColor" aria-hidden>
@@ -85,7 +85,7 @@ export function SectionTitle({ children, light = false }: { children: ReactNode;
       whileInView={{ opacity: 1, letterSpacing: "0.18em" }}
       viewport={{ once: true }}
       transition={{ duration: 1.2 }}
-      className={`text-center font-caps text-2xl uppercase sm:text-4xl ${light ? "text-gold-gradient" : "text-primary"}`}
+      className={`text-balance text-center font-caps text-xl uppercase tracking-[0.12em] sm:text-3xl sm:tracking-[0.18em] md:text-4xl ${light ? "text-gold-gradient" : "text-primary"}`}
     >
       {children}
     </motion.h2>

@@ -8,10 +8,10 @@ import { Divider } from "./Ornaments";
 
 export function OpeningScreen() {
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-maroon-radial py-16">
+    <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden bg-maroon-radial px-4 py-12 sm:py-16">
       <GoldParticles />
       <TempleAnimation />
-      <div className="relative z-20 flex flex-col items-center px-6 text-center">
+      <div className="relative z-20 flex w-full max-w-lg flex-col items-center text-center">
         <motion.img
           src={murugan}
           alt="Lord Murugan"
@@ -23,11 +23,13 @@ export function OpeningScreen() {
           className="h-40 w-auto rounded-t-full border-2 border-gold object-cover shadow-gold sm:h-56"
         />
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 3.2, duration: 1.2 }}>
-          <p className="mt-6 font-caps text-sm tracking-[0.3em] text-champagne sm:text-base">With the Divine Blessings</p>
+          <p className="mt-6 font-caps text-xs tracking-[0.2em] text-champagne sm:text-base sm:tracking-[0.3em]">With the Divine Blessings</p>
           <Divider />
-          <p className="font-serif text-lg italic text-ivory/90 sm:text-2xl">You're Invited to Celebrate</p>
-          <h1 className="mt-3 font-display text-4xl leading-tight text-gold-gradient sm:text-6xl">
-            {wedding.groom.name} <span className="block text-2xl sm:inline sm:text-4xl">&amp;</span> {wedding.bride.name}
+          <p className="font-serif text-base italic text-ivory/90 sm:text-2xl">You're Invited to Celebrate</p>
+          <h1 className="mt-3 text-balance font-display text-[clamp(1.65rem,6.5vw,2.75rem)] leading-snug text-gold-gradient sm:text-5xl md:text-6xl">
+            {wedding.groom.name}
+            <span className="my-1 block text-2xl sm:my-0 sm:inline sm:text-4xl">&amp;</span>
+            {wedding.bride.name}
           </h1>
         </motion.div>
         <motion.a

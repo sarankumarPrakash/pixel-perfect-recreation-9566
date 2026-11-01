@@ -31,70 +31,130 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [failed, setFailed] = useState(false);
+  const gestureBound = useRef(false);
+
+  const isMutedPref = () => sessionStorage.getItem(KEY) === "1";
+
+  const unmuteIfNeeded = useCallback(() => {
+    const a = ref.current;
+    if (!a || isMutedPref()) return;
+    if (!a.muted) return;
+    a.muted = false;
+    a.play().then(() => setPlaying(true)).catch(() => {});
+  }, []);
+
+  const tryAutoplay = useCallback(async () => {
+    const a = ref.current;
+    if (!a || isMutedPref()) return;
+
+    try {
+      a.muted = false;
+      await a.play();
+      setPlaying(true);
+      setFailed(false);
+      return;
+    } catch {
+      /* blocked — try muted autoplay (allowed on most mobile browsers) */
+    }
+
+    try {
+      a.muted = true;
+      await a.play();
+      setPlaying(true);
+      setFailed(false);
+      a.muted = false;
+      try {
+        await a.play();
+      } catch {
+        a.muted = true;
+      }
+    } catch {
+      /* wait for interaction */
+    }
+  }, []);
 
   useEffect(() => {
     const a = new Audio(wedding.audioSrc);
     a.loop = true;
     a.volume = 0.45;
     a.preload = "auto";
+    a.setAttribute("playsinline", "");
     a.addEventListener("error", () => setFailed(true));
+    a.addEventListener("playing", () => {
+      setPlaying(true);
+      setFailed(false);
+    });
     ref.current = a;
-    return () => a.pause();
-  }, []);
+
+    const onReady = () => void tryAutoplay();
+    a.addEventListener("canplay", onReady);
+    void tryAutoplay();
+
+    return () => {
+      a.removeEventListener("canplay", onReady);
+      a.pause();
+    };
+  }, [tryAutoplay]);
+
+  useEffect(() => {
+    if (gestureBound.current || isMutedPref()) return;
+    gestureBound.current = true;
+    const events = ["pointerdown", "touchstart", "keydown"] as const;
+    const unlock = () => {
+      unmuteIfNeeded();
+      void ref.current?.play().then(() => setPlaying(true)).catch(() => {});
+      events.forEach((e) => window.removeEventListener(e, unlock));
+    };
+    events.forEach((e) => window.addEventListener(e, unlock, { passive: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, unlock));
+  }, [unmuteIfNeeded]);
 
   const play = useCallback(() => {
-    ref.current?.play().then(() => setPlaying(true)).catch(() => setFailed(true));
-  }, []);
+    void tryAutoplay();
+  }, [tryAutoplay]);
 
   const start = useCallback(() => {
-    if (sessionStorage.getItem(KEY) === "1") return;
-    play();
-  }, [play]);
+    if (isMutedPref()) return;
+    void tryAutoplay();
+  }, [tryAutoplay]);
 
-  // Try to play on page load; browsers may block it until the guest's first tap, key press or scroll.
   const autoStart = useCallback(() => {
-    if (sessionStorage.getItem(KEY) === "1") return () => {};
+    if (isMutedPref()) return () => {};
+    void tryAutoplay();
     const events = ["pointerdown", "touchstart", "keydown", "wheel", "scroll"] as const;
     const off = () => events.forEach((e) => window.removeEventListener(e, retry));
     const retry = () => {
-      ref.current
-        ?.play()
-        .then(() => {
-          setPlaying(true);
-          off();
-        })
-        .catch(() => {});
-    };
-    const t = setTimeout(() => {
-      ref.current
-        ?.play()
-        .then(() => setPlaying(true))
-        .catch(() => events.forEach((e) => window.addEventListener(e, retry, { passive: true })));
-    }, 50);
-    return () => {
-      clearTimeout(t);
+      void tryAutoplay();
       off();
     };
-  }, []);
+    events.forEach((e) => window.addEventListener(e, retry, { passive: true }));
+    return () => {
+      off();
+    };
+  }, [tryAutoplay]);
 
   const toggle = useCallback(() => {
     if (!ref.current) return;
-    if (playing) {
+    if (playing && !ref.current.paused) {
       ref.current.pause();
       setPlaying(false);
       sessionStorage.setItem(KEY, "1");
     } else {
       sessionStorage.setItem(KEY, "0");
-      play();
+      setFailed(false);
+      ref.current.muted = false;
+      ref.current
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => setFailed(true));
     }
-  }, [playing, play]);
+  }, [playing]);
 
   return <MusicCtx.Provider value={{ autoStart, start, toggle, playing, failed }}>{children}</MusicCtx.Provider>;
 }
 
 export const useMusic = () => {
   const c = useContext(MusicCtx);
-  // Fallback keeps the page rendering if the provider is momentarily missing (e.g. after a hot reload).
   return c ?? fallback;
 };
 
@@ -106,17 +166,22 @@ export function MusicPlayer() {
       animate={{ scale: 1 }}
       whileHover={{ scale: 1.1 }}
       onClick={toggle}
+      data-auto-scroll-ignore
       disabled={failed}
       aria-label={playing ? "Mute music" : "Play music"}
       title={failed ? "Music unavailable" : playing ? "Mute music" : "Play music"}
-      className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full border border-gold bg-maroon-radial text-champagne shadow-gold disabled:opacity-50"
+      className="fixed z-50 flex h-12 w-12 items-center justify-center rounded-full border border-gold bg-maroon-radial text-champagne shadow-gold disabled:opacity-50 sm:h-14 sm:w-14"
+      style={{
+        bottom: "max(1rem, env(safe-area-inset-bottom, 0px))",
+        right: "max(1rem, env(safe-area-inset-right, 0px))",
+      }}
     >
       {playing ? (
         <motion.span animate={{ rotate: 360 }} transition={{ duration: 6, repeat: Infinity, ease: "linear" }}>
-          <Music className="h-6 w-6" />
+          <Music className="h-5 w-5 sm:h-6 sm:w-6" />
         </motion.span>
       ) : (
-        <VolumeX className="h-6 w-6" />
+        <VolumeX className="h-5 w-5 sm:h-6 sm:w-6" />
       )}
     </motion.button>
   );

@@ -12,13 +12,17 @@ export function useAutoScroll(enabled: boolean, startDelay = 5000, pxPerSecond =
     let last = 0;
     let pos = window.scrollY;
     let stopped = false;
-    const stop = () => {
+    const events = ["wheel", "touchstart", "pointerdown", "keydown"] as const;
+
+    const stop = (e?: Event) => {
+      if (stopped) return;
+      const target = (e?.target as HTMLElement | null) ?? null;
+      if (target?.closest("[data-auto-scroll-ignore]")) return;
       stopped = true;
       cancelAnimationFrame(raf);
-      events.forEach((e) => window.removeEventListener(e, stop));
+      events.forEach((ev) => window.removeEventListener(ev, stop));
+      document.documentElement.style.scrollBehavior = "";
     };
-    const events = ["wheel", "touchstart", "pointerdown", "keydown"] as const;
-    events.forEach((e) => window.addEventListener(e, stop, { passive: true }));
 
     const step = (t: number) => {
       if (stopped) return;
@@ -28,16 +32,18 @@ export function useAutoScroll(enabled: boolean, startDelay = 5000, pxPerSecond =
       if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) return stop();
       raf = requestAnimationFrame(step);
     };
-    const timer = setTimeout(() => {
+
+    const timer = window.setTimeout(() => {
+      if (stopped) return;
       pos = window.scrollY;
       document.documentElement.style.scrollBehavior = "auto";
+      events.forEach((ev) => window.addEventListener(ev, stop, { passive: true }));
       raf = requestAnimationFrame(step);
     }, startDelay);
 
     return () => {
       clearTimeout(timer);
       stop();
-      document.documentElement.style.scrollBehavior = "";
     };
   }, [enabled, startDelay, pxPerSecond]);
 }

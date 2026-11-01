@@ -46,7 +46,8 @@ function Invitation() {
   }, [autoStart]);
 
   return (
-    <main>
+    <main className="overflow-x-hidden">
+      <MusicPlayer />
       <AnimatePresence>{loading && <LoadingMonogram key="load" />}</AnimatePresence>
       {!loading && (
         <>
@@ -57,7 +58,6 @@ function Invitation() {
           <CountdownTimer />
           <VenueSection />
           <ClosingSection />
-          <MusicPlayer />
         </>
       )}
     </main>

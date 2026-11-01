@@ -4,7 +4,8 @@ import { MapPin, Navigation, Heart } from "lucide-react";
 import { wedding } from "@/config/wedding";
 import mandapam from "@/assets/mandapam.jpg";
 import couple from "@/assets/couple.jpg";
-import rings from "@/assets/engagement-rings.jpeg.asset.json";
+/** engagement-rings asset is a blank arch template — bundled couple art fills the frame. */
+const couplePortraitSrc = couple;
 import { Divider, GoldCard, Jasmine, Kolam, Lamp, SectionTitle } from "./Ornaments";
 import { FloatingPetals } from "./FloatingPetals";
 
@@ -17,15 +18,17 @@ const fade = {
 
 function Person({ p, role }: { p: typeof wedding.groom | typeof wedding.bride; role: string }) {
   return (
-    <motion.div {...fade} className="text-center">
-      <p className="font-caps text-xs tracking-[0.3em] text-gold">{role}</p>
-      <h3 className="mt-2 font-display text-3xl text-primary sm:text-4xl">{p.name}</h3>
-      <p className="mt-1 text-lg italic text-muted-foreground">{p.qualification}</p>
-      {p.work && <p className="text-lg text-muted-foreground">{p.work}</p>}
-      <div className="mt-5 text-base">
-        <p className="font-caps text-[0.7rem] tracking-[0.25em] text-gold">{role === "The Groom" ? "Son of" : "Daughter of"}</p>
-        <p className="mt-1 font-semibold">{p.father}</p>
-        <p className="font-semibold">{p.mother}</p>
+    <motion.div {...fade} className="mx-auto max-w-xs text-center sm:max-w-sm">
+      <p className="font-caps text-[0.65rem] tracking-[0.25em] text-gold sm:text-xs sm:tracking-[0.3em]">{role}</p>
+      <h3 className="mt-2 text-balance font-display text-2xl text-primary sm:text-3xl md:text-4xl">{p.name}</h3>
+      <p className="mt-1 text-base italic text-muted-foreground sm:text-lg">{p.qualification}</p>
+      {p.work && <p className="text-balance text-base text-muted-foreground sm:text-lg">{p.work}</p>}
+      <div className="mt-5 text-sm leading-relaxed sm:text-base">
+        <p className="font-caps text-[0.65rem] tracking-[0.2em] text-gold sm:text-[0.7rem] sm:tracking-[0.25em]">
+          {role === "The Groom" ? "Son of" : "Daughter of"}
+        </p>
+        <p className="mt-1 text-balance font-semibold">{p.father}</p>
+        <p className="text-balance font-semibold">{p.mother}</p>
       </div>
     </motion.div>
   );
@@ -33,10 +36,10 @@ function Person({ p, role }: { p: typeof wedding.groom | typeof wedding.bride; r
 
 export function CoupleIntroduction() {
   return (
-    <section id="couple" className="relative overflow-hidden bg-silk-ivory px-6 py-24">
-      <Kolam className="absolute -left-20 -top-20 h-72 w-72 text-gold/20" />
-      <Kolam className="absolute -bottom-24 -right-24 h-80 w-80 text-gold/20" />
-      <Jasmine className="mx-auto mb-8 w-64" />
+    <section id="couple" className="relative overflow-hidden bg-silk-ivory px-4 py-16 sm:px-6 sm:py-24">
+      <Kolam className="absolute -left-16 -top-16 h-48 w-48 text-gold/20 sm:-left-20 sm:-top-20 sm:h-72 sm:w-72" />
+      <Kolam className="absolute -bottom-16 -right-16 h-52 w-52 text-gold/20 sm:-bottom-24 sm:-right-24 sm:h-80 sm:w-80" />
+      <Jasmine className="mx-auto mb-8 w-full max-w-xs sm:max-w-sm" />
       <SectionTitle>Together With Our Families</SectionTitle>
       <Divider />
       <motion.figure
@@ -44,19 +47,34 @@ export function CoupleIntroduction() {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 1.2 }}
-        className="mx-auto my-10 max-w-md overflow-hidden rounded-t-full gold-frame shadow-gold"
+        className="relative mx-auto my-10 max-w-sm overflow-hidden rounded-t-full gold-frame shadow-gold sm:max-w-md"
       >
         <motion.img
-          src={rings.url}
-          alt="The couple's hands with engagement rings"
+          src={couplePortraitSrc}
+          alt="Illustration of the bride and groom in traditional wedding attire"
           loading="lazy"
-          className="aspect-[4/5] w-full object-cover"
-          initial={{ scale: 1.15 }}
+          width={1024}
+          height={1280}
+          className="aspect-[3/4] min-h-[18rem] w-full object-cover object-[center_15%] sm:min-h-[22rem]"
+          initial={{ scale: 1.08 }}
           whileInView={{ scale: 1 }}
           transition={{ duration: 6 }}
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = couple;
+          }}
         />
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-maroon-deep/90 via-maroon-deep/50 to-transparent px-4 pb-6 pt-16 text-center sm:px-6 sm:pb-8"
+          aria-hidden
+        >
+          <p className="font-display text-3xl text-gold-gradient sm:text-4xl">{wedding.monogram}</p>
+          <p className="mt-2 font-caps text-[0.65rem] tracking-[0.28em] text-champagne sm:text-xs">
+            {wedding.reception.date}
+          </p>
+        </div>
       </motion.figure>
-      <div className="mx-auto grid max-w-4xl items-center gap-12 md:grid-cols-[1fr_auto_1fr]">
+      <div className="mx-auto grid max-w-4xl items-center gap-8 sm:gap-12 md:grid-cols-[1fr_auto_1fr]">
         <Person p={wedding.groom} role="The Groom" />
         <motion.div {...fade} className="flex justify-center text-gold">
           <Heart className="h-10 w-10 fill-primary text-primary" />
@@ -71,9 +89,9 @@ export function CoupleIntroduction() {
 function Venue() {
   return (
     <>
-      <p className="mt-6 font-display text-xl text-primary sm:text-2xl">{wedding.venue.name}</p>
+      <p className="mt-6 text-balance font-display text-lg text-primary sm:text-xl md:text-2xl">{wedding.venue.name}</p>
       {wedding.venue.lines.map((l) => (
-        <p key={l} className="text-lg text-muted-foreground">{l}</p>
+        <p key={l} className="text-balance text-base text-muted-foreground sm:text-lg">{l}</p>
       ))}
     </>
   );
@@ -82,14 +100,14 @@ function Venue() {
 export function ReceptionDetails() {
   const r = wedding.reception;
   return (
-    <section id="reception" className="relative overflow-hidden bg-maroon-radial px-6 py-24">
+    <section id="reception" className="relative overflow-hidden bg-maroon-radial px-4 py-16 sm:px-6 sm:py-24">
       <FloatingPetals count={10} />
       <GoldCard>
         <p className="font-caps text-xs tracking-[0.35em] text-gold">Join us for the</p>
-        <h2 className="mt-2 font-caps text-3xl tracking-[0.2em] text-primary sm:text-5xl">RECEPTION</h2>
+        <h2 className="mt-2 font-caps text-2xl tracking-[0.12em] text-primary sm:text-4xl sm:tracking-[0.2em] md:text-5xl">RECEPTION</h2>
         <Divider />
-        <p className="text-xl font-semibold">{r.date}</p>
-        <p className="mt-1 font-caps tracking-widest text-gold">{r.time}</p>
+        <p className="text-balance text-base font-semibold sm:text-xl">{r.date}</p>
+        <p className="mt-1 text-balance font-caps text-sm tracking-[0.15em] text-gold sm:text-base sm:tracking-widest">{r.time}</p>
         <Venue />
       </GoldCard>
     </section>
@@ -102,7 +120,7 @@ export function WeddingDetails() {
   const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
   const m = wedding.muhurtham;
   return (
-    <section ref={ref} id="muhurtham" className="relative overflow-hidden px-6 py-28">
+    <section ref={ref} id="muhurtham" className="relative overflow-hidden px-4 py-20 sm:px-6 sm:py-28">
       <motion.img
         src={mandapam}
         alt=""
@@ -113,15 +131,21 @@ export function WeddingDetails() {
         className="absolute inset-0 h-[120%] w-full object-cover"
       />
       <div className="absolute inset-0 bg-maroon-deep/70" />
-      <div className="absolute bottom-6 left-4 flex gap-4 sm:left-10"><Lamp className="h-20" /><Lamp className="h-16" /></div>
-      <div className="absolute bottom-6 right-4 flex gap-4 sm:right-10"><Lamp className="h-16" /><Lamp className="h-20" /></div>
-      <Jasmine className="relative mx-auto mb-6 w-72" />
+      <div className="absolute bottom-4 left-2 flex gap-2 sm:bottom-6 sm:left-10 sm:gap-4">
+        <Lamp className="h-10 w-8 sm:h-20 sm:w-auto" />
+        <Lamp className="h-8 w-6 sm:h-16 sm:w-auto" />
+      </div>
+      <div className="absolute bottom-4 right-2 flex gap-2 sm:bottom-6 sm:right-10 sm:gap-4">
+        <Lamp className="h-8 w-6 sm:h-16 sm:w-auto" />
+        <Lamp className="h-10 w-8 sm:h-20 sm:w-auto" />
+      </div>
+      <Jasmine className="relative mx-auto mb-6 w-full max-w-xs sm:max-w-sm" />
       <GoldCard className="bg-card/85">
         <p className="font-caps text-xs tracking-[0.35em] text-gold">The auspicious</p>
-        <h2 className="mt-2 font-caps text-2xl tracking-[0.18em] text-primary sm:text-4xl">WEDDING MUHURTHAM</h2>
+        <h2 className="mt-2 font-caps text-xl tracking-[0.1em] text-primary sm:text-3xl sm:tracking-[0.18em] md:text-4xl">WEDDING MUHURTHAM</h2>
         <Divider />
-        <p className="text-xl font-semibold">{m.date}</p>
-        <p className="mt-1 font-caps tracking-widest text-gold">{m.time}</p>
+        <p className="text-balance text-base font-semibold sm:text-xl">{m.date}</p>
+        <p className="mt-1 text-balance font-caps text-sm tracking-[0.15em] text-gold sm:text-base sm:tracking-widest">{m.time}</p>
         <Venue />
       </GoldCard>
     </section>
@@ -149,7 +173,7 @@ export function CountdownTimer() {
   }, [target]);
 
   return (
-    <section id="countdown" className="relative bg-silk-ivory px-6 py-24 text-center">
+    <section id="countdown" className="relative bg-silk-ivory px-4 py-16 text-center sm:px-6 sm:py-24">
       <SectionTitle>Counting Down</SectionTitle>
       <Divider />
       {t?.done ? (
@@ -157,10 +181,10 @@ export function CountdownTimer() {
           Happily Married! Thank you for your blessings.
         </motion.p>
       ) : (
-        <div className="mx-auto grid max-w-3xl grid-cols-4 gap-3 sm:gap-6" aria-live="polite">
+        <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-6" aria-live="polite">
           {(["Days", "Hours", "Minutes", "Seconds"] as const).map((k) => (
-            <motion.div key={k} {...fade} className="rounded-sm gold-frame bg-maroon-radial py-5 shadow-gold sm:py-8">
-              <div className="relative h-10 overflow-hidden sm:h-16">
+            <motion.div key={k} {...fade} className="rounded-sm gold-frame bg-maroon-radial py-4 shadow-gold sm:py-8">
+              <div className="relative h-9 overflow-hidden sm:h-16">
                 <AnimatePresence mode="popLayout">
                   <motion.span
                     key={t ? t[k] : k}
@@ -168,7 +192,7 @@ export function CountdownTimer() {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 30, opacity: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="block font-caps text-3xl text-gold-gradient sm:text-6xl"
+                    className="block font-caps text-2xl text-gold-gradient sm:text-4xl md:text-6xl"
                   >
                     {t ? String(t[k]).padStart(2, "0") : "--"}
                   </motion.span>
@@ -179,14 +203,14 @@ export function CountdownTimer() {
           ))}
         </div>
       )}
-      <p className="mt-8 italic text-muted-foreground">until {wedding.muhurtham.date}, 6:00 AM IST</p>
+      <p className="mt-8 px-2 text-sm italic text-muted-foreground sm:text-base">until {wedding.muhurtham.date}, 6:00 AM IST</p>
     </section>
   );
 }
 
 export function VenueSection() {
   return (
-    <section id="venue" className="relative overflow-hidden bg-silk-ivory px-6 pb-24">
+    <section id="venue" className="relative overflow-hidden bg-silk-ivory px-4 pb-16 sm:px-6 sm:pb-24">
       <GoldCard>
         <MapPin className="mx-auto h-10 w-10 text-primary" />
         <SectionTitle>The Venue</SectionTitle>
@@ -197,7 +221,7 @@ export function VenueSection() {
           href={wedding.venue.mapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-8 inline-flex items-center gap-2 rounded-sm bg-primary px-8 py-4 font-caps text-sm tracking-[0.25em] text-primary-foreground shadow-gold"
+          className="mt-8 inline-flex w-full max-w-xs items-center justify-center gap-2 rounded-sm bg-primary px-4 py-3 font-caps text-xs tracking-[0.15em] text-primary-foreground shadow-gold sm:w-auto sm:max-w-none sm:px-8 sm:py-4 sm:text-sm sm:tracking-[0.25em]"
         >
           <Navigation className="h-4 w-4" /> GET DIRECTIONS
         </motion.a>
@@ -208,9 +232,9 @@ export function VenueSection() {
 
 export function ClosingSection() {
   return (
-    <section id="closing" className="relative overflow-hidden bg-maroon-radial px-6 py-24 text-center">
+    <section id="closing" className="relative overflow-hidden bg-maroon-radial px-4 py-16 text-center sm:px-6 sm:py-24">
       <FloatingPetals count={20} />
-      <Kolam className="absolute left-1/2 top-10 h-[34rem] w-[34rem] -translate-x-1/2 text-gold/10" />
+      <Kolam className="absolute left-1/2 top-10 h-64 w-64 -translate-x-1/2 text-gold/10 sm:h-[28rem] sm:w-[28rem] md:h-[34rem] md:w-[34rem]" />
       <motion.img
         src={couple}
         alt="Illustration of a Tamil bride and groom under a golden floral arch"
@@ -221,15 +245,15 @@ export function ClosingSection() {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 2 }}
-        className="relative mx-auto w-72 rounded-t-full border-2 border-gold shadow-gold sm:w-96"
+        className="relative mx-auto w-56 max-w-[85vw] rounded-t-full border-2 border-gold shadow-gold sm:w-72 md:w-96"
       />
       <div className="relative mt-6 flex justify-center gap-10"><Lamp className="h-16" /><Lamp className="h-16" /></div>
-      <motion.h2 {...fade} className="relative mt-8 font-display text-3xl text-gold-gradient sm:text-5xl">
+      <motion.h2 {...fade} className="relative mt-8 px-2 text-balance font-display text-xl leading-snug text-gold-gradient sm:text-3xl md:text-5xl">
         {wedding.groom.name.toUpperCase()} <span className="text-primary-foreground">❤️</span> {wedding.bride.name.toUpperCase()}
       </motion.h2>
       <Divider />
-      <motion.p {...fade} className="relative mx-auto max-w-xl text-xl italic text-ivory sm:text-2xl">{wedding.closing.message}</motion.p>
-      <motion.p {...fade} className="relative mt-8 font-caps tracking-[0.3em] text-champagne">{wedding.closing.signoff}</motion.p>
+      <motion.p {...fade} className="relative mx-auto max-w-xl px-2 text-base italic text-ivory sm:text-xl md:text-2xl">{wedding.closing.message}</motion.p>
+      <motion.p {...fade} className="relative mt-8 px-2 font-caps text-xs tracking-[0.2em] text-champagne sm:text-sm sm:tracking-[0.3em]">{wedding.closing.signoff}</motion.p>
     </section>
   );
 }
