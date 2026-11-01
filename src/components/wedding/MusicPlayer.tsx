@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Music, VolumeX } from "lucide-react";
 import { motion } from "framer-motion";
-import { wedding } from "@/config/wedding";
+import { wedding, weddingAudioSources } from "@/config/wedding";
 
 type Ctx = { autoStart: () => () => void; start: () => void; toggle: () => void; playing: boolean; failed: boolean };
 const MusicCtx = createContext<Ctx | null>(null);
@@ -74,12 +74,24 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const a = new Audio(wedding.audioSrc);
+    let sourceIndex = 0;
+    const a = new Audio(weddingAudioSources[sourceIndex] ?? wedding.audioSrc);
     a.loop = true;
     a.volume = 0.45;
     a.preload = "auto";
     a.setAttribute("playsinline", "");
-    a.addEventListener("error", () => setFailed(true));
+    const onError = () => {
+      sourceIndex += 1;
+      const next = weddingAudioSources[sourceIndex];
+      if (next) {
+        setFailed(false);
+        a.src = next;
+        a.load();
+        return;
+      }
+      setFailed(true);
+    };
+    a.addEventListener("error", onError);
     a.addEventListener("playing", () => {
       setPlaying(true);
       setFailed(false);
@@ -92,6 +104,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
 
     return () => {
       a.removeEventListener("canplay", onReady);
+      a.removeEventListener("error", onError);
       a.pause();
     };
   }, [tryAutoplay]);

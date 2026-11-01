@@ -1,6 +1,9 @@
 import loveBgm from "@/assets/love-bgm-2.mp3.asset.json";
 import localBgm from "@/assets/WhatsApp Audio 2026-11-01 at 7.16.42 PM.mpeg?url";
 
+/** Bundled first (Vercel/static); Lovable CDN path only works on Lovable-hosted deploys. */
+export const weddingAudioSources = [localBgm, loveBgm.url] as const;
+
 // Single editable configuration for all wedding details.
 export const wedding = {
   groom: {
@@ -37,8 +40,7 @@ export const wedding = {
     // 22 Nov 2026, 6:00 AM IST
     isoStart: "2026-11-22T06:00:00+05:30",
   },
-  // Lovable CDN in production; bundled file for local dev (CDN paths 404 on vite dev).
-  audioSrc: import.meta.env.DEV ? localBgm : loveBgm.url,
+  audioSrc: localBgm,
   closing: {
     message: "Your Presence and Blessings Will Make Our Celebration Special",
     signoff: "With Love, Family & Friends",
