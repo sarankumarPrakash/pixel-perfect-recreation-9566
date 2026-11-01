@@ -36,7 +36,11 @@ function Invitation() {
 
   useEffect(() => {
     const id = setTimeout(() => setLoading(false), 1200);
-    return autoStart(id);
+    const stop = autoStart();
+    return () => {
+      clearTimeout(id);
+      stop();
+    };
   }, [autoStart]);
 
   return (

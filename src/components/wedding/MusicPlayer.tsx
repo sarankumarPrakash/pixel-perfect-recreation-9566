@@ -3,7 +3,7 @@ import { Music, VolumeX } from "lucide-react";
 import { motion } from "framer-motion";
 import { wedding } from "@/config/wedding";
 
-type Ctx = { start: () => void; toggle: () => void; playing: boolean; failed: boolean };
+type Ctx = { autoStart: () => () => void; start: () => void; toggle: () => void; playing: boolean; failed: boolean };
 const MusicCtx = createContext<Ctx | null>(null);
 const KEY = "wedding-music-muted";
 
@@ -50,6 +50,32 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     play();
   }, [play]);
 
+  // Try to play on page load; browsers may block it until the guest's first tap, key press or scroll.
+  const autoStart = useCallback(() => {
+    if (sessionStorage.getItem(KEY) === "1") return () => {};
+    const events = ["pointerdown", "touchstart", "keydown", "wheel", "scroll"] as const;
+    const off = () => events.forEach((e) => window.removeEventListener(e, retry));
+    const retry = () => {
+      ref.current
+        ?.play()
+        .then(() => {
+          setPlaying(true);
+          off();
+        })
+        .catch(() => {});
+    };
+    const t = setTimeout(() => {
+      ref.current
+        ?.play()
+        .then(() => setPlaying(true))
+        .catch(() => events.forEach((e) => window.addEventListener(e, retry, { passive: true })));
+    }, 50);
+    return () => {
+      clearTimeout(t);
+      off();
+    };
+  }, []);
+
   const toggle = useCallback(() => {
     if (!ref.current) return;
     if (playing) {
@@ -62,7 +88,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     }
   }, [playing, play]);
 
-  return <MusicCtx.Provider value={{ start, toggle, playing, failed }}>{children}</MusicCtx.Provider>;
+  return <MusicCtx.Provider value={{ autoStart, start, toggle, playing, failed }}>{children}</MusicCtx.Provider>;
 }
 
 export const useMusic = () => {
