@@ -23,7 +23,7 @@ function Person({ p, role }: { p: typeof wedding.groom | typeof wedding.bride; r
       <p className="mt-1 text-lg italic text-muted-foreground">{p.qualification}</p>
       {p.work && <p className="text-lg text-muted-foreground">{p.work}</p>}
       <div className="mt-5 text-base">
-        <p className="font-caps text-[0.7rem] tracking-[0.25em] text-gold">Son/Daughter of</p>
+        <p className="font-caps text-[0.7rem] tracking-[0.25em] text-gold">{role === "The Groom" ? "Son of" : "Daughter of"}</p>
         <p className="mt-1 font-semibold">{p.father}</p>
         <p className="font-semibold">{p.mother}</p>
       </div>
