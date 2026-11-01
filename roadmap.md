@@ -1,3 +1,3 @@
 # Roadmap
-- [ ] Auto-scroll invitation on load (stops when guest scrolls)
-- [ ] Romantic Tamil-style background music
+- [x] Auto-scroll invitation on load (stops when guest scrolls)
+- [x] Romantic Tamil-style background music
