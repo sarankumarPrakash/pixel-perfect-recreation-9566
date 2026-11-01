@@ -87,6 +87,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
         setFailed(false);
         a.src = next;
         a.load();
+        void tryAutoplay();
         return;
       }
       setFailed(true);
@@ -180,7 +181,7 @@ export function MusicPlayer() {
       whileHover={{ scale: 1.1 }}
       onClick={toggle}
       data-auto-scroll-ignore
-      disabled={failed}
+      disabled={false}
       aria-label={playing ? "Mute music" : "Play music"}
       title={failed ? "Music unavailable" : playing ? "Mute music" : "Play music"}
       className="fixed z-50 flex h-12 w-12 items-center justify-center rounded-full border border-gold bg-maroon-radial text-champagne shadow-gold disabled:opacity-50 sm:h-14 sm:w-14"

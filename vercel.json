@@ -1,0 +1,12 @@
+{
+  "headers": [
+    {
+      "source": "/wedding-bgm.mpeg",
+      "headers": [{ "key": "Content-Type", "value": "audio/mpeg" }]
+    },
+    {
+      "source": "/assets/(.*)\\.mpeg",
+      "headers": [{ "key": "Content-Type", "value": "audio/mpeg" }]
+    }
+  ]
+}
